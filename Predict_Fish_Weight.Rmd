@@ -21,6 +21,10 @@ levels(Allfish$Species)
 ```{r}
 Perch <- subset(Allfish,Species == "Perch")
 Perch <- select(Perch, -Species) 
+Bream <- subset(Allfish, Species == "Bream")
+Bream <- select(Bream, -Species)
+Smelt <- subset(Allfish,Species == "Smelt")
+Smelt <- select(Smelt, -Species)
 ```
 
 # Introduction
@@ -48,7 +52,8 @@ library(car)
 subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
 ```
 
-This plot shows the best regression model is height and width. 
+This plot shows the best regression model is height and width.
+
 ##Which is best??  
 
 ```{r}
@@ -63,6 +68,76 @@ Perchmodel <- lm(Weight~Height+Width ,data= Perch)
 summary.lm(Perchmodel)
 ```
 
+The model has adjusted r^2 which is 0.94, the best model is high the standard error is 85.17
+
 # Bream
 
+``````{r}
+library(leaps)
+regsubsets.out <-
+    regsubsets(Weight ~ .,
+               data = Bream,
+               nbest = 1,       # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary.out <- summary(regsubsets.out)
+as.data.frame(summary.out$outmat)
+library(car)
+subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
+```
+
+ The plot above shows the three best models is length,height, and width.
+
+##Which is best??  
+
+```{r}
+which.max(summary.out$adjr2)
+```
+```{r}
+summary.out$which[2,]
+```
+
+```{r}
+Breammodel <- lm(Weight~Height+Length2 ,data= Bream)
+summary.lm(Breammodel)
+```
+
+The adjusted r^2 is 0.9356 and the residual standard error is 53.1
+
 # Smelt
+
+``````{r}
+library(leaps)
+regsubsets.out <-
+    regsubsets(Weight ~ .,
+               data = Smelt,
+               nbest = 1,       # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary.out <- summary(regsubsets.out)
+as.data.frame(summary.out$outmat)
+library(car)
+subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
+```
+
+This plot shows the best regression model is height, Length and width.
+
+##Which is best??  
+
+```{r}
+which.max(summary.out$adjr2)
+```
+```{r}
+summary.out$which[2,]
+```
+
+```{r}
+Smeltmodel <- lm(Weight~Height+Length2 ,data= Smelt)
+summary.lm(Smeltmodel)
+```
+
+The adjusted R^2 is 0.9507 and the residual standard error is 0.9968
